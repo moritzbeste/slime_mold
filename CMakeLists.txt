@@ -7,16 +7,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenMP REQUIRED)
 
-add_executable(slime_mold
-    src/main.cpp
+add_executable(slime_mold)
+
+add_subdirectory(src)
+
+target_link_directories(slime_mold PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/raylib-6.0_linux_amd64/lib
 )
 
 target_include_directories(slime_mold PRIVATE
     ${CMAKE_SOURCE_DIR}/external/raylib-6.0_linux_amd64/include
-)
-
-target_link_directories(slime_mold PRIVATE
-    ${CMAKE_SOURCE_DIR}/external/raylib-6.0_linux_amd64/lib
 )
 
 target_link_libraries(slime_mold PRIVATE
