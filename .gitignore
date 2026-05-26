@@ -1,17 +1,52 @@
-# Godot 4+ specific ignores
-.godot/
-.nomedia
+# Build directories
+build/
+cmake-build-*/
 
-# Godot-specific ignores
-.import/
-export.cfg
-export_credentials.cfg
-*.tmp
+# CMake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+compile_commands.json
 
-# Imported translations (automatically generated from CSV files)
-*.translation
+# Generated binaries
+*.out
+*.app
+*.exe
 
-# Mono-specific ignores
-.mono/
-data_*/
-mono_crash.*.json
+# Static/Dynamic libs
+*.a
+*.so
+*.so.*
+*.dll
+*.dylib
+
+# Object files
+*.o
+*.obj
+
+# Debug/profiling
+*.dSYM/
+gmon.out
+perf.data*
+callgrind.out.*
+
+# Editors
+.vscode/
+.idea/
+
+# Vim
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Optional local dependency folders
+external/build/
+
+# Cache/temp
+.cache/
+tmp/
+temp/
