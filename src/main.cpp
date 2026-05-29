@@ -15,11 +15,13 @@ int main(void) {
     InitWindow(Config::screenWidth, Config::screenHeight, "opengl test");
     SetTargetFPS(Config::targetFPS);
     gladLoadGL((GLADloadfunc)rlGetProcAddress);
+    cudaSetDevice(0);
 
     // generate texture
     GLuint tex = generateOpenGLTexture(Config::screenWidth, Config::screenHeight);
     Texture2D rlTex = generateRaylibTexture(Config::screenWidth, Config::screenHeight, tex);
     cudaGraphicsResource* cudaResource = registerWithCuda(tex);
+    cudaSurfaceObject_t surface;
 
     // generate agents (SoA structure)
     float2* d_positions = cudaBuffer(Config::n_agents, 0.0);
@@ -27,23 +29,23 @@ int main(void) {
 
     while (!WindowShouldClose()) {
         CHECK(cudaGraphicsMapResources(1, &cudaResource));
-        cudaSurfaceObject_t surface = getCudaSurface(cudaResource);
+        surface = getCudaSurface(cudaResource);
 
-        launch_agent(d_positions, d_velocities, cudaResource, surface, Config::n_agents);
-        launch_render(surface, Config::n_pixels);
+        launch_agent(d_positions, d_velocities, surface);
+        launch_render(surface);
 
         BeginDrawing();
         ClearBackground(BLACK);
         DrawTexture(rlTex, 0, 0, WHITE);
         EndDrawing();
 
-        CHECK(cudaDestroySurfaceObject(surface));
         CHECK(cudaGraphicsUnmapResources(1, &cudaResource));
         CHECK(cudaDeviceSynchronize());
     }
 
     CloseWindow();
 
+    CHECK(cudaDestroySurfaceObject(surface));
     CHECK(cudaFree(d_positions));
     CHECK(cudaFree(d_velocities));
 

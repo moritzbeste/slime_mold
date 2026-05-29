@@ -79,7 +79,7 @@ float2* cudaBuffer(int length, float magnitude) {
     std::vector<float2> host(length);
 
     for (int i = 0; i < length; i++) {
-        host[i] = (magnitude == 0.0 ? float2(0.0, 0.0) : randomFloat2(magnitude));
+        host[i] = (magnitude == 0.0 ? float2(400.0, 225.0) : randomFloat2(magnitude));
     }
 
     CHECK(cudaMemcpy(d_buffer, host.data(), length * sizeof(float2), cudaMemcpyHostToDevice));
