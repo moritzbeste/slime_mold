@@ -48,6 +48,18 @@ float sampleSensor(
     return magnitude2(data);
 }
 
+__device__ __forceinline__
+float rand01(uint seed) {
+    seed ^= 2747636419u;
+    seed *= 2654435769u;
+    seed ^= seed >> 16;
+    seed *= 2654435769u;
+    seed ^= seed >> 16;
+    seed *= 2654435769u;
+
+    return (float)seed / 4294967295.0f;
+}
+
 /*
  * The agents kernel updates the position and velocity of an agent and brightens the current position in the surface
  */
@@ -61,6 +73,7 @@ __global__ void agent(
     float sensor_offset,
     float steering_coeff_sin,
     float steering_coeff_cos,
+    float noiseStrength,
     float deltat,
     int screenWidth,
     int screenHeight,
@@ -115,6 +128,10 @@ __global__ void agent(
     float FL = sampleSensor(surface, position, leftDir,  sensor_offset, screenWidth, screenHeight);
     float FR = sampleSensor(surface, position, rightDir, sensor_offset, screenWidth, screenHeight);
 
+    F  += noiseStrength * (rand01(gid * 3 + 0) * 2.f - 1.f);
+    FL += noiseStrength * (rand01(gid * 3 + 1) * 2.f - 1.f);
+    FR += noiseStrength * (rand01(gid * 3 + 2) * 2.f - 1.f);
+
     // steer
     if (FL > F && FL > FR) {
         dir = rotate(
@@ -160,6 +177,7 @@ void launch_agent(float2* positions, float2* velocities, cudaSurfaceObject_t sur
         Config::sensor_offset, 
         Config::steering_coeff_sin,
         Config::steering_coeff_cos,
+        Config::noiseStrength,
         Config::deltat, 
         Config::screenWidth, 
         Config::screenHeight, 

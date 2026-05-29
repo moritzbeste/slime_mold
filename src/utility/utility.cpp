@@ -79,7 +79,7 @@ float2* cudaBuffer(int length, float magnitude) {
     std::vector<float2> host(length);
 
     for (int i = 0; i < length; i++) {
-        host[i] = (magnitude == 0.0 ? float2(Config::screenWidth / 2, Config::screenHeight / 2) : randomFloat2(magnitude));
+        host[i] = (magnitude == 0.0 ? float2(Config::screenWidth / 2, Config::screenHeight / 2) : randomFloat2(magnitude * randomFloat()));
     }
 
     CHECK(cudaMemcpy(d_buffer, host.data(), length * sizeof(float2), cudaMemcpyHostToDevice));

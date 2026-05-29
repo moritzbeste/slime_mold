@@ -17,14 +17,15 @@ namespace Config {
 
     const float magnitude = 100.f;
     const float deltat = 1e-2;
-    const float3 intensity = float3(0.2f, 0.1f, 0.2f);
-    const float3 decay = float3(0.004f, 0.003f, 0.002f);
+    const float3 intensity = float3(0.5f, 0.2f, 0.2f);
+    const float3 decay = float3(0.7f, 0.99f, 0.999f);
 
     const float sensor_angle = 5 * M_PI / 12;
     const float sensor_angle_sin = sin(sensor_angle); // sin(-x) = -sin(x)
     const float sensor_angle_cos = cos(sensor_angle); // cos(-X) = cos(x)
     const float sensor_offset = 5.f;
-    const float steering_coeff = 0.05f;
+    const float steering_coeff = 0.07f;
+    const float noiseStrength = 1e-15;
     const float steering_coeff_sin = sin(steering_coeff); // sin(-x) = -sin(x)
     const float steering_coeff_cos = cos(steering_coeff); // cos(-X) = cos(x)
     const int blur_radius = 2;
