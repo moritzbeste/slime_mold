@@ -29,9 +29,12 @@ GLuint generateOpenGLTexture(int width, int height) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+    int len = width * height * 4;
+    std::vector<float> data(len, 0.f);
+
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
                 width, height, 0,
-                GL_RGBA, GL_FLOAT, nullptr);
+                GL_RGBA, GL_FLOAT, data.data());
 
     return tex;
 }
