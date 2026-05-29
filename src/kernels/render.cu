@@ -12,7 +12,7 @@ __global__ void render(
     float3 decay,
     int screenWidth,
     int screenHeight, 
-    int blur_radius,
+    int blurRadius,
     int count) {
     
     uint gid = (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -30,8 +30,8 @@ __global__ void render(
 
     int c = 0;
 
-    for (int i = -blur_radius; i <= blur_radius; i++) {
-        for (int j = -blur_radius; j <= blur_radius; j++) {
+    for (int i = -blurRadius; i <= blurRadius; i++) {
+        for (int j = -blurRadius; j <= blurRadius; j++) {
             if (i == 0 && j == 0) { continue; }
             int curr_x = x + i;
             int curr_y = y + j;
@@ -52,5 +52,5 @@ __global__ void render(
 }
 
 void launch_render(cudaSurfaceObject_t surface) {
-    render<<<Config::GRIDSIZE_PIXELS, Config::BLOCKSIZE>>>(surface, Config::decay, Config::screenWidth, Config::screenHeight, Config::blur_radius, Config::n_pixels);
+    render<<<Config::GRIDSIZE_PIXELS, Config::BLOCKSIZE>>>(surface, Config::decay, Config::screenWidth, Config::screenHeight, Config::blurRadius, Config::nPixels);
 }

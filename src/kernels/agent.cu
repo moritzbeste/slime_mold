@@ -68,12 +68,13 @@ __global__ void agent(
     float2* velocities,
     cudaSurfaceObject_t surface,
     float3 intensity, 
-    float sensor_angle_sin,
-    float sensor_angle_cos,
-    float sensor_offset,
-    float steering_coeff_sin,
-    float steering_coeff_cos,
+    float sensorAngleSin,
+    float sensorAngleCos,
+    float sensorOffset,
+    float steeringCoeffSin,
+    float steeringCoeffCos,
     float noiseStrength,
+    float jitterStrength,
     float deltat,
     int screenWidth,
     int screenHeight,
@@ -114,37 +115,42 @@ __global__ void agent(
 
     float2 leftDir = rotate(
         dir,
-        sensor_angle_sin,
-        sensor_angle_cos
+        sensorAngleSin,
+        sensorAngleCos
     );
 
     float2 rightDir = rotate(
         dir,
-        -sensor_angle_sin,
-        sensor_angle_cos
+        -sensorAngleSin,
+        sensorAngleCos
     );
 
-    float F  = sampleSensor(surface, position, dir,      sensor_offset, screenWidth, screenHeight);
-    float FL = sampleSensor(surface, position, leftDir,  sensor_offset, screenWidth, screenHeight);
-    float FR = sampleSensor(surface, position, rightDir, sensor_offset, screenWidth, screenHeight);
+    float F  = sampleSensor(surface, position, dir,      sensorOffset, screenWidth, screenHeight);
+    float FL = sampleSensor(surface, position, leftDir,  sensorOffset, screenWidth, screenHeight);
+    float FR = sampleSensor(surface, position, rightDir, sensorOffset, screenWidth, screenHeight);
 
     F  += noiseStrength * (rand01(gid * 3 + 0) * 2.f - 1.f);
     FL += noiseStrength * (rand01(gid * 3 + 1) * 2.f - 1.f);
     FR += noiseStrength * (rand01(gid * 3 + 2) * 2.f - 1.f);
 
+    float jitter = jitterStrength * (rand01(gid) * 2.f - 1.f);
+    float c = cosf(jitter);
+    float s = sinf(jitter);
+    dir = rotate(dir, s, c);
+
     // steer
     if (FL > F && FL > FR) {
         dir = rotate(
             dir,
-            steering_coeff_sin,
-            steering_coeff_cos
+            steeringCoeffSin,
+            steeringCoeffCos
         );
     }
     else if (FR > F && FR > FL) {
         dir = rotate(
             dir,
-            -steering_coeff_sin,
-            steering_coeff_cos
+            -steeringCoeffSin,
+            steeringCoeffCos
         );
     }
 
@@ -168,18 +174,20 @@ __global__ void agent(
 }
 
 void launch_agent(float2* positions, float2* velocities, cudaSurfaceObject_t surface) {
-    agent<<<Config::GRIDSIZE_AGENTS, Config::BLOCKSIZE>>>(positions, 
+    agent<<<Config::GRIDSIZE_AGENTS, Config::BLOCKSIZE>>>(
+        positions, 
         velocities, 
         surface, 
         Config::intensity, 
-        Config::sensor_angle_sin, 
-        Config::sensor_angle_cos, 
-        Config::sensor_offset, 
-        Config::steering_coeff_sin,
-        Config::steering_coeff_cos,
+        Config::sensorAngleSin, 
+        Config::sensorAngleCos, 
+        Config::sensorOffset, 
+        Config::steeringCoeffSin,
+        Config::steeringCoeffCos,
         Config::noiseStrength,
-        Config::deltat, 
+        Config::jitterStrength,
+        Config::delta_t, 
         Config::screenWidth, 
         Config::screenHeight, 
-        Config::n_agents);
+        Config::nAgents);
 }
