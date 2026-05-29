@@ -8,8 +8,7 @@ __global__ void render(
     cudaSurfaceObject_t surface,
     float3 decay,
     int screenWidth,
-    int count
-) {
+    int count) {
     uint gid = (blockIdx.x * blockDim.x) + threadIdx.x;
     if (gid >= count) { return; }
 
