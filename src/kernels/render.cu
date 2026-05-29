@@ -17,9 +17,9 @@ __global__ void render(
     int y = gid / screenWidth;
 
     float4 data = surf2Dread<float4>(surface, x * sizeof(float4), y);
-    data.x = fmaxf(data.x * decay.x, 0.f);
-    data.y = fmaxf(data.y * decay.y, 0.f);
-    data.z = fmaxf(data.z * decay.z, 0.f);
+    data.x = fmaxf(data.x - decay.x * data.x * data.x, 0.f);
+    data.y = fmaxf(data.y - decay.y * data.y * data.y, 0.f);
+    data.z = fmaxf(data.z - decay.z * data.z * data.z, 0.f);
     surf2Dwrite(data, surface, x * sizeof(float4), y);
 }
 

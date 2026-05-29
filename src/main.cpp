@@ -12,7 +12,9 @@
 int main(void) {
 
     initRandom();
-    InitWindow(Config::screenWidth, Config::screenHeight, "opengl test");
+    InitWindow(0, 0, "Slime Mold Simulation");
+    SetWindowState(FLAG_BORDERLESS_WINDOWED_MODE);
+    Config::Init();
     SetTargetFPS(Config::targetFPS);
     gladLoadGL((GLADloadfunc)rlGetProcAddress);
     cudaSetDevice(0);
@@ -22,6 +24,8 @@ int main(void) {
     Texture2D rlTex = generateRaylibTexture(Config::screenWidth, Config::screenHeight, tex);
     cudaGraphicsResource* cudaResource = registerWithCuda(tex);
     cudaSurfaceObject_t surface;
+
+    std::cout << Config::screenWidth;
 
     // generate agents (SoA structure)
     float2* d_positions = cudaBuffer(Config::nAgents, false);
@@ -33,19 +37,19 @@ int main(void) {
 
         launch_agent(d_positions, d_velocities, surface);
         launch_render(surface);
+        CHECK(cudaDeviceSynchronize());
 
         BeginDrawing();
         ClearBackground(BLACK);
         DrawTexture(rlTex, 0, 0, WHITE);
         EndDrawing();
 
+        CHECK(cudaDestroySurfaceObject(surface));
         CHECK(cudaGraphicsUnmapResources(1, &cudaResource));
-        CHECK(cudaDeviceSynchronize());
     }
 
     CloseWindow();
 
-    CHECK(cudaDestroySurfaceObject(surface));
     CHECK(cudaFree(d_positions));
     CHECK(cudaFree(d_velocities));
 
