@@ -15,18 +15,17 @@ namespace Config {
     const int GRIDSIZE_AGENTS = (nAgents + BLOCKSIZE - 1) / BLOCKSIZE;
     const int GRIDSIZE_PIXELS = (nPixels + BLOCKSIZE - 1) / BLOCKSIZE;
 
-    const float magnitude = 100.f;
-    const float delta_t = 1e-2;
-    const float3 intensity = float3(0.5f, 0.6f, 0.7f);
-    const float3 decay = float3(0.97f, 0.7f, 0.95f);
+    const float delta_t = 1.f;
+    const float3 intensity = float3(0.5f, 0.5f, 0.1f);
+    const float3 decay = float3(0.7f, 0.97f, 0.99f);
 
     const float sensorAngle = 5 * M_PI / 12;
     const float sensorAngleSin = sin(sensorAngle); // sin(-x) = -sin(x)
     const float sensorAngleCos = cos(sensorAngle); // cos(-X) = cos(x)
     const float sensorOffset = 5.f;
-    const float steeringCoeff = 0.09f;
-    const float noiseStrength = 1e-10;
-    const float jitterStrength = 1e-8;
+    const float steeringCoeff = 0.07f;
+    const float noiseStrength = 1e-8;
+    const float jitterStrength = 1e-6;
     const float steeringCoeffSin = sin(steeringCoeff); // sin(-x) = -sin(x)
     const float steeringCoeffCos = cos(steeringCoeff); // cos(-X) = cos(x)
 }

@@ -24,8 +24,8 @@ int main(void) {
     cudaSurfaceObject_t surface;
 
     // generate agents (SoA structure)
-    float2* d_positions = cudaBuffer(Config::nAgents, 0.0);
-    float2* d_velocities = cudaBuffer(Config::nAgents, Config::magnitude);
+    float2* d_positions = cudaBuffer(Config::nAgents, false);
+    float2* d_velocities = cudaBuffer(Config::nAgents, true);
 
     while (!WindowShouldClose()) {
         CHECK(cudaGraphicsMapResources(1, &cudaResource));
