@@ -27,4 +27,5 @@ namespace Config {
     const float steering_coeff = 0.05f;
     const float steering_coeff_sin = sin(steering_coeff); // sin(-x) = -sin(x)
     const float steering_coeff_cos = cos(steering_coeff); // cos(-X) = cos(x)
+    const int blur_radius = 2;
 }

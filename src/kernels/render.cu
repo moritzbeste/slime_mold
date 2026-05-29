@@ -12,6 +12,7 @@ __global__ void render(
     float3 decay,
     int screenWidth,
     int screenHeight, 
+    int blur_radius,
     int count) {
     
     uint gid = (blockIdx.x * blockDim.x) + threadIdx.x;
@@ -27,17 +28,16 @@ __global__ void render(
     surf2Dwrite(data, surface, x * sizeof(float4), y);
     block.sync();
 
-    const int BLUR_RADIUS = 2;
     int c = 0;
 
-    for (int i = -BLUR_RADIUS; i <= BLUR_RADIUS; i++) {
-        for (int j = -BLUR_RADIUS; j <= BLUR_RADIUS; j++) {
+    for (int i = -blur_radius; i <= blur_radius; i++) {
+        for (int j = -blur_radius; j <= blur_radius; j++) {
             if (i == 0 && j == 0) { continue; }
-            int inRow = x + i;
-            int inCol = y + j;
+            int curr_x = x + i;
+            int curr_y = y + j;
 
-            if (inRow < screenHeight && inRow >= 0 && inCol < screenWidth && inCol >= 0) {
-                float4 curr = surf2Dread<float4>(surface, inRow * sizeof(float4), inCol);
+            if (curr_x < screenHeight && curr_x >= 0 && curr_y < screenWidth && curr_y >= 0) {
+                float4 curr = surf2Dread<float4>(surface, curr_x * sizeof(float4), curr_y);
                 data.x += curr.x;
                 data.y += curr.y;
                 data.z += curr.z;
@@ -52,5 +52,5 @@ __global__ void render(
 }
 
 void launch_render(cudaSurfaceObject_t surface) {
-    render<<<Config::GRIDSIZE_PIXELS, Config::BLOCKSIZE>>>(surface, Config::decay, Config::screenWidth, Config::screenHeight, Config::n_pixels);
+    render<<<Config::GRIDSIZE_PIXELS, Config::BLOCKSIZE>>>(surface, Config::decay, Config::screenWidth, Config::screenHeight, Config::blur_radius, Config::n_pixels);
 }
