@@ -23,17 +23,17 @@ namespace Config {
         GRIDSIZE_PIXELS = (nPixels + BLOCKSIZE - 1) / BLOCKSIZE;
     }
 
-    inline const float delta_t = 1.5f;
-    inline const float3 intensity = float3(0.01f, 0.01f, 0.01f);
-    inline const float3 decay = float3(0.3f, 0.2f, 0.06f);
+    inline const float delta_t = 2.f;
+    inline const float3 intensity = float3(0.07f, 0.02f, 0.06f);
+    inline const float3 decay = float3(0.4f, 0.4f, 0.1f);
 
-    inline const float sensorAngle = 5 * M_PI / 12;
+    inline const float sensorAngle =  M_PI / 4;
     inline const float sensorAngleSin = sin(sensorAngle); // sin(-x) = -sin(x)
     inline const float sensorAngleCos = cos(sensorAngle); // cos(-X) = cos(x)
-    inline const float sensorOffset = 5.f;
-    inline const float steeringCoeff = 0.09f * delta_t;
-    inline const float noiseStrength = 1e-4 * delta_t;
-    inline const float jitterStrength = 1e-3 * delta_t;
+    inline const float sensorOffset = 8.f;
+    inline const float steeringCoeff = 0.1f;
+    inline const float noiseStrength = 1e-2;
+    inline const float jitterStrength = 4e-4;
     inline const float steeringCoeffSin = sin(steeringCoeff); // sin(-x) = -sin(x)
     inline const float steeringCoeffCos = cos(steeringCoeff); // cos(-X) = cos(x)
 }
