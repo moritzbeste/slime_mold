@@ -1,5 +1,6 @@
 target_sources(slime_mold PRIVATE
     main.cpp
+    kernel.cu
 )
 
 add_subdirectory(utility)

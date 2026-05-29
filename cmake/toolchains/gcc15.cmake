@@ -1,0 +1,3 @@
+set(CMAKE_C_COMPILER gcc-15)
+set(CMAKE_CXX_COMPILER g++-15)
+set(CMAKE_CUDA_HOST_COMPILER /usr/bin/gcc-15)

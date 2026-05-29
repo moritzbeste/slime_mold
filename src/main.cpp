@@ -1,28 +1,12 @@
-#include "raylib.h"
-#include "utility.h"
-#include "config.h"
 #include <iostream>
+#include "kernel.cuh"
 
-int main(void)
+int main()
 {
-    const int seed = 42;
-    const int screenWidth = 800;
-    const int screenHeight = 450;
+    std::cout << "Launching CUDA kernel...\n";
 
-    InitRandom();
+    launch_hello_kernel();
 
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - delta time");
-    SetTargetFPS(Config::targetFPS);
-
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-            ClearBackground(RAYWHITE);
-            DrawText("RandomFloat()", 190, 200, 20, LIGHTGRAY);
-        EndDrawing();
-    }
-
-    CloseWindow();
-
+    std::cout << "Done.\n";
     return 0;
 }

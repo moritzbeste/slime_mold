@@ -1,11 +1,12 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 
-project(slime_mold)
+project(slime_mold LANGUAGES CXX CUDA)
+
+enable_language(CUDA)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(OpenMP REQUIRED)
 
 add_executable(slime_mold)
 
@@ -21,7 +22,6 @@ target_include_directories(slime_mold PRIVATE
 
 target_link_libraries(slime_mold PRIVATE
     raylib
-    OpenMP::OpenMP_CXX
 )
 
 set_target_properties(slime_mold PROPERTIES
