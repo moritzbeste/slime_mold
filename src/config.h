@@ -6,8 +6,8 @@ namespace Config {
     inline constexpr int targetFPS = 60;
     inline constexpr int seed = 42; 
     
-    const int screenWidth = 750;
-    const int screenHeight = 500;
+    const int screenWidth = 1000;
+    const int screenHeight = 700;
     const int nPixels = screenWidth * screenHeight;
 
     const int nAgents = (int)pow(2, 15);

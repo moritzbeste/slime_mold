@@ -1,9 +1,6 @@
 #include <cstdio>
 #include "config.h"
 
-#include <cuda/barrier>
-#include <cooperative_groups.h>
-
 /*
  * The render kernel blurs the surface
  */
@@ -18,7 +15,6 @@ __global__ void render(
     if (gid >= count) { return; }
     int x = gid % screenWidth;
     int y = gid / screenWidth;
-    auto block = cooperative_groups::this_thread_block();
 
     float4 data = surf2Dread<float4>(surface, x * sizeof(float4), y);
     data.x = fmaxf(data.x * decay.x, 0.f);

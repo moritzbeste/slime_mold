@@ -168,7 +168,6 @@ __global__ void agent(
     data.w = 1.f;
 
     surf2Dwrite(data, surface, x * sizeof(float4), y);
-
     positions[gid] = position;
     velocities[gid] = velocity;
 }
