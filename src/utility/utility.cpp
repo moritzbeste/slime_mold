@@ -5,16 +5,6 @@
 #include <cstdio>
 #include <cmath>
 
-#define CHECK(X)                                                    \
-    do {                                                            \
-        cudaError_t err = (X);                                      \
-        if (err != cudaSuccess) {                                   \
-            fprintf(stderr,                                         \
-                "CUDA Runtime error at %s:%d (%s): %s\n",           \
-                __FILE__, __LINE__, #X, cudaGetErrorString(err));   \
-        }                                                           \
-    } while (0)
-
 void initRandom() {
     srand(Config::seed);
 }
@@ -68,13 +58,18 @@ cudaGraphicsResource* registerWithCuda(GLuint tex) {
     return cudaResource;
 }
 
-cudaArray_t getCudaArray(cudaGraphicsResource* cudaResource) {
-    CHECK(cudaGraphicsMapResources(1, &cudaResource, 0));
-
+cudaSurfaceObject_t getCudaSurface(cudaGraphicsResource* cudaResource) {
     cudaArray_t array;
     CHECK(cudaGraphicsSubResourceGetMappedArray(&array, cudaResource, 0, 0));
 
-    return array;
+    cudaResourceDesc desc{};
+    desc.resType = cudaResourceTypeArray;
+    desc.res.array.array = array;
+
+    cudaSurfaceObject_t surface;
+    CHECK(cudaCreateSurfaceObject(&surface, &desc));
+
+    return surface;
 }
 
 
@@ -84,7 +79,7 @@ float2* cudaBuffer(int length, float magnitude) {
     std::vector<float2> host(length);
 
     for (int i = 0; i < length; i++) {
-        host[i] = randomFloat2(magnitude);
+        host[i] = (magnitude == 0.0 ? float2(0.0, 0.0) : randomFloat2(magnitude));
     }
 
     CHECK(cudaMemcpy(d_buffer, host.data(), length * sizeof(float2), cudaMemcpyHostToDevice));

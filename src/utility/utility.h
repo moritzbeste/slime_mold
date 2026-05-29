@@ -5,6 +5,16 @@
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
 
+#define CHECK(X)                                                    \
+    do {                                                            \
+        cudaError_t err = (X);                                      \
+        if (err != cudaSuccess) {                                   \
+            fprintf(stderr,                                         \
+                "CUDA Runtime error at %s:%d (%s): %s\n",           \
+                __FILE__, __LINE__, #X, cudaGetErrorString(err));   \
+        }                                                           \
+    } while (0)
+
 /*
  *   initiate random generation using the seed given in config
  */
@@ -30,7 +40,7 @@ GLuint generateOpenGLTexture(int width, int height);
 /*
  *   generate raylib texture with a given width and height and fill it with an OpenGL texture
  *   params: int width, int height set the dimensions of the texture 
- *      GLuint id points to the OpenGL texture to be used
+ *   note: caller is responsible for updating OpenGL texture id
  */
 Texture2D generateRaylibTexture(int width, int height, GLuint id);
 
@@ -42,9 +52,9 @@ Texture2D generateRaylibTexture(int width, int height, GLuint id);
 cudaGraphicsResource* registerWithCuda(GLuint tex);
 
 /*
- *   generate cudaArray_t from cudaGraphicsResource
+ *   generate cudaSurfaceObject_t from cudaGraphicsResource
  */
-cudaArray_t getCudaArray(cudaGraphicsResource* cudaResource);
+cudaSurfaceObject_t getCudaSurface(cudaGraphicsResource* cudaResource);
 
 /*
  *   allocate a cuda buffer and fill it using float2 vectors given a magnitude

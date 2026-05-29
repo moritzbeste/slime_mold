@@ -1,7 +1,7 @@
 target_sources(slime_mold PRIVATE
     main.cpp
-    kernels/kernel.cu
-
+    kernels/agent.cu
+    kernels/render.cu
 )
 
 add_subdirectory(utility)
