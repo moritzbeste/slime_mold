@@ -1,4 +1,5 @@
 #include <cstdio>
+#include "config.h"
 
 __global__ void hello_kernel()
 {
@@ -8,6 +9,6 @@ __global__ void hello_kernel()
 
 void launch_hello_kernel()
 {
-    hello_kernel<<<2, 4>>>();
+    hello_kernel<<<Config::GRIDSIZE_AGENTS, Config::BLOCKSIZE>>>();
     cudaDeviceSynchronize();
 }
