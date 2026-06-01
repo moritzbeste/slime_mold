@@ -25,18 +25,28 @@ int simulate(void) {
     cudaGraphicsResource* cudaResource = registerWithCuda(tex);
     cudaSurfaceObject_t surface;
 
-    std::cout << Config::screenWidth;
+    // generate texture buffers
+    float3* d_textureBuffer1 = genTexture(Config::screenWidth * Config::screenHeight);
+    float3* d_textureBuffer2 = genTexture(Config::screenWidth * Config::screenHeight);
 
-    // generate agents (SoA structure)
+    // generate agents
     float2* d_positions = cudaBuffer(Config::nAgents, false);
     float2* d_velocities = cudaBuffer(Config::nAgents, true);
 
+    bool ping = true;
+    float3* writeBuffer;
+    float3* readBuffer;
     while (!WindowShouldClose()) {
+        writeBuffer = ping ? d_textureBuffer1 : d_textureBuffer2;
+        readBuffer  = ping ? d_textureBuffer2 : d_textureBuffer1;
+        ping = not ping;
+
         CHECK(cudaGraphicsMapResources(1, &cudaResource));
         surface = getCudaSurface(cudaResource);
 
-        launch_agent(d_positions, d_velocities, surface);
-        launch_render(surface);
+        launch_agent(d_positions, d_velocities, writeBuffer, readBuffer);
+        CHECK(cudaDeviceSynchronize());
+        launch_render(surface, writeBuffer);
         CHECK(cudaDeviceSynchronize());
 
         BeginDrawing();
@@ -52,6 +62,8 @@ int simulate(void) {
 
     CHECK(cudaFree(d_positions));
     CHECK(cudaFree(d_velocities));
+    CHECK(cudaFree(d_textureBuffer1));
+    CHECK(cudaFree(d_textureBuffer2));
 
     return 0;
 }

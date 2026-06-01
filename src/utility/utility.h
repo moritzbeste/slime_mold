@@ -61,4 +61,6 @@ cudaSurfaceObject_t getCudaSurface(cudaGraphicsResource* cudaResource);
  *   params: int length is the length of the buffer
  *      float magnitude is the target magnitude of the vectors
  */
-float2* cudaBuffer(int length, float magnitude);
+float2* cudaBuffer(int length, bool magnitude);
+
+float3* genTexture(int length);

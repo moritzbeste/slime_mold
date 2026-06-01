@@ -20,7 +20,7 @@ float2 normalize(float2 v) {
 }
 
 __device__ __forceinline__
-float magnitude2(float4 v) {
+float magnitude2(float3 v) {
     return v.x * v.x +
            v.y * v.y +
            v.z * v.z;
@@ -28,7 +28,7 @@ float magnitude2(float4 v) {
 
 __device__ __forceinline__
 float sampleSensor(
-    cudaSurfaceObject_t surface,
+    float3* buffer,
     float2 position,
     float2 direction,
     float offset,
@@ -39,11 +39,7 @@ float sampleSensor(
 
     if (x < 0 || x >= screenWidth || y < 0 || y >= screenHeight) { return 0.0f; }
 
-    float4 data = surf2Dread<float4>(
-        surface,
-        x * sizeof(float4),
-        y
-    );
+    float3 data = buffer[y * screenWidth + x];
 
     return magnitude2(data);
 }
@@ -66,7 +62,8 @@ float rand01(uint seed) {
 __global__ void agent(
     float2* positions,
     float2* velocities,
-    cudaSurfaceObject_t surface,
+    float3* writeBuffer,
+    float3* readBuffer,
     float3 intensity, 
     float sensorAngleSin,
     float sensorAngleCos,
@@ -125,9 +122,9 @@ __global__ void agent(
         sensorAngleCos
     );
 
-    float F  = sampleSensor(surface, position, dir,      sensorOffset, screenWidth, screenHeight);
-    float FL = sampleSensor(surface, position, leftDir,  sensorOffset, screenWidth, screenHeight);
-    float FR = sampleSensor(surface, position, rightDir, sensorOffset, screenWidth, screenHeight);
+    float F  = sampleSensor(readBuffer, position, dir,      sensorOffset, screenWidth, screenHeight);
+    float FL = sampleSensor(readBuffer, position, leftDir,  sensorOffset, screenWidth, screenHeight);
+    float FR = sampleSensor(readBuffer, position, rightDir, sensorOffset, screenWidth, screenHeight);
 
     F  += noiseStrength * (rand01(gid * 3 + 0) * 2.f - 1.f);
     FL += noiseStrength * (rand01(gid * 3 + 1) * 2.f - 1.f);
@@ -158,24 +155,28 @@ __global__ void agent(
     velocity.y = dir.y * speed;
 
     // drawing
-    int x = (int) position.x;
-    int y = (int) position.y;
-    float4 data = surf2Dread<float4>(surface, x * sizeof(float4), y);
+    int x = (int)position.x;
+    int y = (int)position.y;
+
+    int idx = y * screenWidth + x;
+    float3 data = readBuffer[idx];
 
     data.x = fminf(data.x + intensity.x, 1.0f);
     data.y = fminf(data.y + intensity.y, 1.0f);
     data.z = fminf(data.z + intensity.z, 1.0f);
 
-    surf2Dwrite(data, surface, x * sizeof(float4), y);
+    writeBuffer[idx] = data;
+
     positions[gid] = position;
     velocities[gid] = velocity;
 }
 
-void launch_agent(float2* positions, float2* velocities, cudaSurfaceObject_t surface) {
+void launch_agent(float2* positions, float2* velocities, float3* writeBuffer, float3* readBuffer) {
     agent<<<Config::GRIDSIZE_AGENTS, Config::BLOCKSIZE>>>(
         positions, 
         velocities, 
-        surface, 
+        writeBuffer,
+        readBuffer, 
         Config::intensity, 
         Config::sensorAngleSin, 
         Config::sensorAngleCos, 
