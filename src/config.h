@@ -26,8 +26,8 @@ namespace Config {
     }
 
     inline const float delta_t = 2.f;
-    inline const float3 intensity = float3(0.5f, 0.4f, 0.1f);
-    inline const float3 decay = float3(0.3f, 0.15f, 0.3f);
+    inline const float3 intensity = float3(0.15f, 0.1f, 0.025f);
+    inline const float3 decay = float3(0.2f, 0.1f, 0.2f);
 
     inline const float sensorAngle =  M_PI / 6;
     inline const float sensorAngleSin = sin(sensorAngle); // sin(-x) = -sin(x)
