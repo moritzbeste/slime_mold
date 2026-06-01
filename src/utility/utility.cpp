@@ -55,7 +55,7 @@ cudaGraphicsResource* registerWithCuda(GLuint tex) {
         &cudaResource,
         tex,
         GL_TEXTURE_2D,
-        cudaGraphicsRegisterFlagsWriteDiscard
+        cudaGraphicsRegisterFlagsSurfaceLoadStore
     ));
     
     return cudaResource;

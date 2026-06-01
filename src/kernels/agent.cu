@@ -165,7 +165,6 @@ __global__ void agent(
     data.x = fminf(data.x + intensity.x, 1.0f);
     data.y = fminf(data.y + intensity.y, 1.0f);
     data.z = fminf(data.z + intensity.z, 1.0f);
-    data.w = 1.f;
 
     surf2Dwrite(data, surface, x * sizeof(float4), y);
     positions[gid] = position;

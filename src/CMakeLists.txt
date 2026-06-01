@@ -1,5 +1,6 @@
 target_sources(slime_mold PRIVATE
     main.cpp
+    simulate.cpp
     kernels/agent.cu
     kernels/render.cu
 )
