@@ -26,21 +26,14 @@ int simulate(void) {
     cudaSurfaceObject_t surface;
 
     // generate texture buffers
-    float3* d_textureBuffer1 = genTexture(Config::screenWidth * Config::screenHeight);
-    float3* d_textureBuffer2 = genTexture(Config::screenWidth * Config::screenHeight);
+    float3* writeBuffer = genTexture(Config::screenWidth * Config::screenHeight);
+    float3* readBuffer = genTexture(Config::screenWidth * Config::screenHeight);
 
     // generate agents
     float2* d_positions = cudaBuffer(Config::nAgents, false);
     float2* d_velocities = cudaBuffer(Config::nAgents, true);
 
-    bool ping = true;
-    float3* writeBuffer;
-    float3* readBuffer;
     while (!WindowShouldClose()) {
-        writeBuffer = ping ? d_textureBuffer1 : d_textureBuffer2;
-        readBuffer  = ping ? d_textureBuffer2 : d_textureBuffer1;
-        ping = not ping;
-
         CHECK(cudaGraphicsMapResources(1, &cudaResource));
         surface = getCudaSurface(cudaResource);
 
@@ -49,21 +42,27 @@ int simulate(void) {
         launch_render(surface, writeBuffer);
         CHECK(cudaDeviceSynchronize());
 
+        CHECK(cudaDestroySurfaceObject(surface));
+        CHECK(cudaGraphicsUnmapResources(1, &cudaResource));
+
         BeginDrawing();
-        ClearBackground(BLACK);
         DrawTexture(rlTex, 0, 0, WHITE);
         EndDrawing();
 
-        CHECK(cudaDestroySurfaceObject(surface));
-        CHECK(cudaGraphicsUnmapResources(1, &cudaResource));
+        CHECK(cudaMemcpy(
+            readBuffer,
+            writeBuffer,
+            Config::nPixels * sizeof(float3),
+            cudaMemcpyDeviceToDevice
+        ));
     }
 
     CloseWindow();
 
     CHECK(cudaFree(d_positions));
     CHECK(cudaFree(d_velocities));
-    CHECK(cudaFree(d_textureBuffer1));
-    CHECK(cudaFree(d_textureBuffer2));
+    CHECK(cudaFree(writeBuffer));
+    CHECK(cudaFree(readBuffer));
 
     return 0;
 }

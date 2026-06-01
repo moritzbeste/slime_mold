@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <cmath>
 
+#include <iostream>
 void initRandom() {
     srand(Config::seed);
 }
@@ -14,8 +15,8 @@ float randomFloat() {
     return r;
 }
 
-float2 randomFloat2(float magnitude) {
-    float theta = randomFloat() * 2.0f * PI;
+float2 randomFloat2(float magnitude, float rotate) {
+    float theta = rotate * 2.0f * M_PI;
     return float2(cos(theta) * magnitude, sin(theta) * magnitude);
 }
 
@@ -76,14 +77,22 @@ cudaSurfaceObject_t getCudaSurface(cudaGraphicsResource* cudaResource) {
 }
 
 
-float2* cudaBuffer(int length, bool magnitude) {
+float2 rotateVector(float2 origin, float magnitude, float theta) {
+    float2 vec = randomFloat2(magnitude, theta);
+    vec.x += origin.x; vec.y += origin.y;
+    return vec;
+}
+
+
+float2* cudaBuffer(int length, bool vel) {
     float2* d_buffer;
     CHECK(cudaMalloc(&d_buffer, length * sizeof(float2)));
     std::vector<float2> host(length);
 
     for (int i = 0; i < length; i++) {
-        float r = randomFloat();
-        host[i] = magnitude ? randomFloat2(exp(r *r) / sqrt(M_E)) : float2(Config::screenWidth / 2, Config::screenHeight / 2);
+        float magnitude = randomFloat();
+        float rotate = randomFloat();
+        host[i] = vel ? randomFloat2(magnitude, rotate) : rotateVector(Config::center, magnitude, rotate);
     }
 
     CHECK(cudaMemcpy(d_buffer, host.data(), length * sizeof(float2), cudaMemcpyHostToDevice));
