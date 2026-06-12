@@ -172,7 +172,7 @@ __global__ void agent(
 }
 
 void launch_agent(float2* positions, float2* velocities, float3* writeBuffer, float3* readBuffer) {
-    agent<<<Config::GRIDSIZE_AGENTS, Config::BLOCKSIZE>>>(
+    agent<<<Config::AGENT_GRID, Config::AGENT_BLOCK>>>(
         positions, 
         velocities, 
         writeBuffer,

@@ -9,13 +9,15 @@ __global__ void render(
     float3* writeBuffer,
     float3 decay,
     int screenWidth,
-    int count) {
+    int screenHeight) {
     
-    uint gid = (blockIdx.x * blockDim.x) + threadIdx.x;
-    if (gid >= count) { return; }
-    int x = gid % screenWidth;
-    int y = gid / screenWidth;
-    
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (x >= screenWidth || y >= screenHeight) { return; }
+
+    int gid = y * screenWidth + x;
+
     float3 b = writeBuffer[gid];
     float4 data;
     data.x = b.x; data.y = b.y; data.z = b.z; data.w = 1.f;
@@ -28,5 +30,5 @@ __global__ void render(
 }
 
 void launch_render(cudaSurfaceObject_t surface, float3* writeBuffer) {
-    render<<<Config::GRIDSIZE_PIXELS, Config::BLOCKSIZE>>>(surface, writeBuffer, Config::decay, Config::screenWidth, Config::nPixels);
+    render<<<Config::RENDER_GRID, Config::RENDER_BLOCK>>>(surface, writeBuffer, Config::decay, Config::screenWidth, Config::screenHeight);
 }

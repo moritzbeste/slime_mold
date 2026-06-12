@@ -8,21 +8,23 @@ namespace Config {
     inline const int seed = 42; 
 
     inline constexpr int nAgents = 1 << 20;
-    inline constexpr int BLOCKSIZE = 1 << 8;
-    inline const int GRIDSIZE_AGENTS = (nAgents + BLOCKSIZE - 1) / BLOCKSIZE;
+    inline constexpr int TILE_SIZE = 1 << 4;
+    inline const int AGENT_BLOCK = TILE_SIZE * TILE_SIZE;
+    inline const dim3 RENDER_BLOCK = dim3(TILE_SIZE, TILE_SIZE, 1);
+    inline const int AGENT_GRID = (nAgents + AGENT_BLOCK - 1) / AGENT_BLOCK;
 
     inline int screenWidth;
     inline int screenHeight;
     inline int nPixels;
-    inline int GRIDSIZE_PIXELS;
     inline float2 center;
+    inline dim3 RENDER_GRID;
 
     inline void Init() {
         screenWidth = GetScreenWidth();
         screenHeight = GetScreenHeight();
         nPixels = screenWidth * screenHeight;
         center = float2(screenWidth / 2.f, screenHeight / 2.f);
-        GRIDSIZE_PIXELS = (nPixels + BLOCKSIZE - 1) / BLOCKSIZE;
+        RENDER_GRID = dim3((screenWidth + TILE_SIZE - 1) / TILE_SIZE, (screenHeight + TILE_SIZE - 1) / TILE_SIZE, 1);
     }
 
     inline const float delta_t = 2.f;
