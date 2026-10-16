@@ -3,6 +3,7 @@
 #include "raylib.h"
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>
+#include <cstdio>
 
 #define CHECK(X)                                                    \
     do {                                                            \
