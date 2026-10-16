@@ -5,9 +5,8 @@
 #include "kernels/agent.cuh"
 #include "kernels/render.cuh"
 
-#include <iostream>
+#include <cstdio>
 #include <glad/gl.h>
-#include <vector>
 
 int simulate(void) {
 

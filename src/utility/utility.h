@@ -1,6 +1,5 @@
 #pragma once
 #include <glad/gl.h>
-#include <vector>
 #include "raylib.h"
 #include <cuda_runtime.h>
 #include <cuda_gl_interop.h>

@@ -21,6 +21,9 @@ compile_commands.json
 *.dll
 *.dylib
 
+# Keep bundled Raylib 6.0 libraries
+!external/raylib-6.0_linux_amd64/lib/**
+
 # Object files
 *.o
 *.obj
